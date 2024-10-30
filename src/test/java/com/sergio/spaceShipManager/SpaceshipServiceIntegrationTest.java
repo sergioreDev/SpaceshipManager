@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 
 import java.util.Optional;
@@ -43,9 +44,11 @@ public class SpaceshipServiceIntegrationTest {
     @Test
     public void testDeleteById() {
         Spaceship spaceship = spaceshipService.findByName("Elysium");
+
         spaceshipService.deleteById(spaceship.getId());
 
         assertNull(spaceshipService.findByName("Elysium"));
+        spaceshipService.save(spaceship);
     }
 
     @Test
@@ -54,8 +57,9 @@ public class SpaceshipServiceIntegrationTest {
         newSpaceship.setName("Spaceship Test");
 
         spaceshipService.save(newSpaceship);
-
-        assertNotNull(spaceshipService.findByName("Spaceship Test"));
+        Spaceship spaceship = spaceshipService.findByName("Spaceship Test");
+        assertNotNull(spaceship);
+        spaceshipService.deleteById(spaceship.getId());
     }
 
     @Test
