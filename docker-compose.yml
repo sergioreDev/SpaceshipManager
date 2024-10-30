@@ -1,0 +1,41 @@
+version: '2'
+
+services:
+  zookeeper:
+    image: 'zookeeper:latest'
+    container_name: zookeeper
+    ports:
+      - '2181:2181'
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    networks:
+      - red_zookeeper
+
+  kafka:
+    image: 'bitnami/kafka:2.7.0'
+    container_name: kafka
+    ports:
+      - '9092:9092'
+    environment:
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_LISTENERS=PLAINTEXT://:9092
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+    networks:
+      - red_kafka
+      - red_zookeeper
+
+      
+  app:
+    image: 'sha256:329055a264febf09ceaf8efac56a0b7ff04c84e45cd7eb239434ef80444401a6'
+    ports:
+      -  '8080:8080'
+    environment:
+      - API_USER=user
+      - API_PASS=pass
+    networks:
+      - red_kafka
+
+networks:
+  red_kafka:
+  red_zookeeper:
